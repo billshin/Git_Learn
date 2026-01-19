@@ -1,0 +1,133 @@
+### Why Git Repository?
+
+- 為了協作
+- 為了備份
+- 為了分享
+
+### 常用的協作庫
+
+- GitHub
+- GitLab
+
+### 建立 Repository
+
+本地已經有完成的專案的時候
+於 GitHub / GitLab 上 建立空的專案 , 連readme.md都不要
+
+### 將專案推送到 GitHub
+
+使用以下指令 , 至於推送的位置就看開完後的專案給的連結
+
+```bash
+git remote add origin https://github.com/billshin/Git_Practice.git
+git branch -M main
+git push -u origin main
+```
+
+### 單人單線程開發
+
+- 改了沒風險 > main commit
+- 改了有風險 > branch commit > main merge
+
+```Mermaid
+flowchart TD
+    A[開始想修改] --> B[git status]
+    B --> C[修改程式碼]
+    C --> D[git diff 檢查]
+    D --> E{修改是否有風險?}
+
+    E -- 否 --> F[git add]
+    F --> G[git commit]
+    G --> H[git push origin main]
+
+    E -- 是 --> I[git switch -c feature-x]
+    I --> C
+    G --> J[git switch main]
+    J --> K[git merge feature-x]
+    K --> H
+```
+
+###　多人協作/使用GitLab GitHub CI/CD
+
+指令解釋
+
+- git clone = 拿一份全新的倉庫(本地完全沒有狀態)
+- git fetch origin develop = 抓取遠端的develop分支
+- git pull --rebase origin develop =抓取遠端的develop分支並合併到本地的develop分支
+
+> clone 是「第一次」，pull 是「之後每一次」
+
+> Rebase 的優點在於不會產生額外的 Commit 來紀錄合併這個動作 , 千萬不要把已經push過的Commit Rebase
+
+> 多人協作怕改了舊的東西到時候merge要花許多時間 ,或是push了舊的main上去
+
+**以下解釋指令的實際動作**
+git clone
+
+```bash
+git init
+git remote add origin <url>
+git fetch origin
+git checkout <default-branch>
+```
+
+git pull
+
+```bash
+git fetch
+git merge origin/<current-branch>
+```
+
+### 開工前檢查
+
+```bash
+git switch develop(or main)
+git fetch            # 抓遠端最新
+git status           # 看是否落後
+# 若落後
+git log HEAD..origin/develop --oneline   # 確認新 commit
+git pull             # 拉回最新
+git switch -c feature/xxx
+```
+
+```Mermaid
+flowchart TD
+    A[切到主線分支<br/>git switch develop] --> B[檢查工作目錄<br/>git status]
+    B --> C{有未完成修改?}
+    C -- 是 --> D[先 commit 或 stash]
+    C -- 否 --> E[拉取遠端最新<br/>git pull]
+    D --> E
+    E --> F[開 feature branch<br/>git switch -c feature/xxx]
+    F --> G[開始本地開發 + commit]
+    G --> H[git push origin feature/xxx]
+    H --> I[git switch develop]
+    I --> J[git merge feature/xxx]
+    J --> K[git push origin develop]
+```
+
+### 本地main(dev)已經落後 , 如何處理正在開發中的 branch ?
+
+原則上就是先把目前開發中branch先Commit, 保留最後狀態
+接著把main切回來 , 更新到與Repo上一樣的進度
+再切回原本開發中的branch
+(但可能會遇到merge 衝突處理)
+
+```Mermaid
+flowchart TD
+
+    A[先檢查目前Branch<br> git status ] --> B{working tree clean ?}
+
+    B -- 否 --> C[先commit 目前進度]
+    B -- 是 --> D[git switch main]
+
+    C --> D[git switch main]
+    D --> E[git pull origin main]
+
+    E --> F[git switch feature/xxx]
+    F --> G[git merge main]
+
+
+
+
+
+```
