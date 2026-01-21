@@ -16,7 +16,7 @@
 ## 補充教學
 
 - [Commit_Message](Commit_Message.md) - 提交信息規範
-- [Conflictc衝突教學](Conflictc衝突教學.md) - 衝突解決方法
+- [Conflict衝突教學](Conflict衝突教學衝突教學.md) - 衝突解決方法
 
 ---
 
